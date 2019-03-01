@@ -7,13 +7,15 @@
 #include "GLFW/glfw3.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
+#include "../include/ShaderProgram.h"
+#include "../include/Texture2D.h"
 
 //Globals
 const char *APP_TITLE = "Internet-enabled Skills Training";
 int gWindowWidth = 1024;
 int gWindowHeight = 768;
 GLFWwindow *gWindow = NULL;
-glm::vec4 gClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+glm::vec4 gClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 static bool mac_moved = true;
 
 // Function Prototypes
