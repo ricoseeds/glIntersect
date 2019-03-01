@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #define GLEW_STATIC
 #include "GL/glew.h"
@@ -13,10 +14,12 @@ int gWindowWidth = 1024;
 int gWindowHeight = 768;
 GLFWwindow *gWindow = NULL;
 glm::vec4 gClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-static bool mac_moved = false;
+static bool mac_moved = true;
 
 // Function Prototypes
+std::string getOsName();
 void mac_patch(GLFWwindow *window);
+
 // Callbacks
 void glfw_onFramebufferSize(GLFWwindow *window, int width, int height);
 void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -61,7 +64,6 @@ bool initOpenGL()
     // Set the required callback functions
     glfwSetKeyCallback(gWindow, glfw_onKey);
     glfwSetFramebufferSizeCallback(gWindow, glfw_onFramebufferSize);
-
     glClearColor(gClearColor.r, gClearColor.g, gClearColor.b, gClearColor.a);
 
     // Define the viewport dimensions
@@ -73,12 +75,10 @@ bool initOpenGL()
 
 void mac_patch(GLFWwindow *window)
 {
-    if (glfwGetTime() > 1.0)
+    if (glfwGetTime() > 3.0)
     {
         mac_moved = true;
     }
-    // glfwGetTim
-
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE && !mac_moved)
     {
         int x, y;
@@ -133,4 +133,22 @@ void glfw_onFramebufferSize(GLFWwindow *window, int width, int height)
     gWindowWidth = width;
     gWindowHeight = height;
     glViewport(0, 0, gWindowWidth, gWindowHeight);
+}
+std::string getOsName()
+{
+#ifdef _WIN32
+    return "Windows 32-bit";
+#elif _WIN64
+    return "Windows 64-bit";
+#elif __unix || __unix__
+    return "Unix";
+#elif __APPLE__ || __MACH__
+    return "Mac";
+#elif __linux__
+    return "Linux";
+#elif __FreeBSD__
+    return "FreeBSD";
+#else
+    return "Other";
+#endif
 }

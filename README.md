@@ -1,5 +1,5 @@
 
-###### Opengl 3.3 and C++
+###### Implementation using Opengl 3.3 and C++
 Author : Argha Chakraborty
 
 ###### Internet-enabled Skills Training Platform for neurosurgical training
