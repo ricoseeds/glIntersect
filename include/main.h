@@ -75,7 +75,7 @@ bool initOpenGL()
 
 void mac_patch(GLFWwindow *window)
 {
-    if (glfwGetTime() > 3.0)
+    if (glfwGetTime() > 1.0)
     {
         mac_moved = true;
     }
