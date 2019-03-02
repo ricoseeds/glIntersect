@@ -15,31 +15,64 @@ int main(int argc, char *argv[])
     //Load the Shaders
     ShaderProgram lightingShader;
     lightingShader.loadShaders("shaders/vertx.vert", "shaders/fragh.frag");
+    Texture2D texture;
+    texture.loadTexture("images/ducktomy.png", false);
     //Vertices for image
 
-    GLfloat symmetry_create = 0.5; //max is 1 for entire screen
-    static const GLfloat image_points[] = {
-        -symmetry_create, -symmetry_create, 0,
-        symmetry_create, -symmetry_create, 0,
-        symmetry_create, symmetry_create, 0,
-        -symmetry_create, symmetry_create, 0};
-    // Game loop
-    GLuint mVBO, mVAO;
+    GLfloat symmetry_create = 0.8; //max is 1 for entire screen
+    // static const GLfloat image_points[] = {
+    //     -symmetry_create, -symmetry_create, 0,
+    //     symmetry_create, -symmetry_create, 0,
+    //     symmetry_create, symmetry_create, 0,
+    //     // 0, symmetry_create - 0.2, 0,
+    //     -symmetry_create, symmetry_create, 0};
+    static const GLfloat verties[] = {
+        -symmetry_create,
+        symmetry_create,
+        0.0f,
+        //uv
+        0.0f, 1.0f,
+        symmetry_create,
+        symmetry_create,
+        0.0f,
+        //uv
+        1.0f, 1.0f,
+        symmetry_create,
+        -symmetry_create,
+        0.0f,
+        //uv
+        1.0f, 0.0f,
+        -symmetry_create,
+        -symmetry_create,
+        0.0f,
+        //uv
+        0.0f, 0.0f};
+    GLuint indeces[] = {
+        0, 1, 2,
+        0, 2, 3};
+    GLuint vbo, ibo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verties), verties, GL_STATIC_DRAW);
 
-    glGenVertexArrays(1, &mVAO);
-    glGenBuffers(1, &mVBO);
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    //tell vertex shader how vertices are laid out
 
-    glBindVertexArray(mVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    // glBufferData(GL_ARRAY_BUFFER, image_points.size() * sizeof(Vertex), &mVertices[0], GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
-
-    // Vertex Positions
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    //position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);
     glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
 
+    //texCoord
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    //Indexing
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
+
+    // Game loop
     while (!glfwWindowShouldClose(gWindow))
     {
         showFPS(gWindow);
@@ -48,9 +81,32 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Rest of the stuff
         lightingShader.use();
-        glBindVertexArray(mVAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        //code
+        // GLuint mVBO, mVAO;
+
+        // glGenVertexArrays(1, &mVAO);
+
+        // glGenBuffers(1, &mVBO);
+
+        // glBindVertexArray(mVAO);
+        // glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+        // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
+
+        // // Vertex Positions
+        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        // glEnableVertexAttribArray(0);
+        // glBindVertexArray(0);
+        // //code
+        // glBindVertexArray(mVAO);
+        // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        // glBindVertexArray(0);
+        //Static draw part
+        texture.bind(0);
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+        texture.unbind(0);
+        //End of Static draw part
 
         glfwSwapBuffers(gWindow);
         mac_patch(gWindow);
