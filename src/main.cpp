@@ -12,12 +12,15 @@ int main(int argc, char *argv[])
         std::cerr << "GLFW initialization failed" << std::endl;
         return -1;
     }
+    glfwSetCursorPosCallback( gWindow, cursorPositionCallback );
+
     //Load the Shaders
     ShaderProgram lightingShader, polyShader;
     lightingShader.loadShaders("shaders/vertx.vert", "shaders/fragh.frag");
     polyShader.loadShaders("shaders/poly.vert", "shaders/poly.frag");
     Texture2D texture;
-    texture.loadTexture("images/ducktomy.png", true);
+    // texture.loadTexture("images/ducktomy.png", true);
+    texture.loadTexture("images/brain.jpeg", true);
     //Vertices for image
 
     GLfloat symmetry_create1 = 0.4; //max is 1 for entire screen

@@ -43,14 +43,20 @@ static const GLfloat verties[] = {
 GLuint indeces[] = {
     0, 1, 2,
     0, 2, 3};
+double normalizedX, normalizedY; 
+int number_of_truth_points = 0;
+std::vector<glm::vec3> truth_data;
 
 // Function Prototypes
+
 std::string getOsName();
 void mac_patch(GLFWwindow *window);
 
 // Callbacks
 void glfw_onFramebufferSize(GLFWwindow *window, int width, int height);
 void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode);
+static void cursorPositionCallback( GLFWwindow *window, double xpos, double ypos );
+
 
 // boiler plate for setting up opengl
 bool initOpenGL()
@@ -154,6 +160,22 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+}
+static void cursorPositionCallback( GLFWwindow *window, double xpos, double ypos )
+{
+    // std::cout << xpos << " : " << ypos << std::endl;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        std::cout << "Press\n";
+        normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth; 
+        normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
+        number_of_truth_points ++;
+        std::cout << normalizedX << " : " << normalizedY << std::endl;
+
+        truth_data.push_back(glm::vec3(normalizedX, normalizedY, 0));
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+            std::cout << "Release\n";
+        }
+    }
 }
 
 void glfw_onFramebufferSize(GLFWwindow *window, int width, int height)
