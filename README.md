@@ -9,7 +9,7 @@ The medical and technological sciences have grown rapidly over the last decade. 
 
 ###### Compile and run in MAC
 ```
-g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp  -framework OpenGl -I/usr/local/include -lglfw -lGLEW && a.out
+ g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp -o run -framework OpenGl -I/usr/local/include -lglfw -lGLEW -I/usr/local/opt/freetype/include/freetype2  -L/usr/local/lib -lfreetype -g
 ```
 
 ###### Compile and run in Linux
