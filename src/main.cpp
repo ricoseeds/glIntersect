@@ -153,8 +153,9 @@ int main(int argc, char *argv[])
         // Rest of the stuff
         // shader.use();
 
-        RenderText(shader, std::to_string(truth_data.size()), 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-        // RenderText(shader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, "STATS:", 25.0f, 80.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, "No of Vertices:", 25.0f, 60.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, std::to_string(truth_data.size()), 25.0f, 25.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
         polyShader.use();
         polyShader.setUniform("mycolor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -173,6 +174,7 @@ int main(int argc, char *argv[])
         glBindVertexArray(0);
         //actual rendering of poly
         glBindVertexArray(mVAO);
+        glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
         glDrawArrays(GL_LINE_LOOP, 0, truth_data.size());
         // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
         glBindVertexArray(0);
