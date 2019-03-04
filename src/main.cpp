@@ -17,41 +17,17 @@ int main(int argc, char *argv[])
     lightingShader.loadShaders("shaders/vertx.vert", "shaders/fragh.frag");
     polyShader.loadShaders("shaders/poly.vert", "shaders/poly.frag");
     Texture2D texture;
-    texture.loadTexture("images/ducktomy.png", false);
+    texture.loadTexture("images/ducktomy.png", true);
     //Vertices for image
 
-    GLfloat symmetry_create = 1.0;  //max is 1 for entire screen
     GLfloat symmetry_create1 = 0.4; //max is 1 for entire screen
     static const GLfloat image_points[] = {
         -symmetry_create1, -symmetry_create1, 0,
         symmetry_create1, -symmetry_create1, 0,
         symmetry_create1, symmetry_create1, 0,
-        // 0, symmetry_create - 0.2, 0,
+        0, symmetry_create1 - 0.2, 0,
         -symmetry_create1, symmetry_create1, 0};
-    static const GLfloat verties[] = {
-        -symmetry_create,
-        symmetry_create,
-        0.0f,
-        //uv
-        0.0f, 1.0f,
-        symmetry_create,
-        symmetry_create,
-        0.0f,
-        //uv
-        1.0f, 1.0f,
-        symmetry_create,
-        -symmetry_create,
-        0.0f,
-        //uv
-        1.0f, 0.0f,
-        -symmetry_create,
-        -symmetry_create,
-        0.0f,
-        //uv
-        0.0f, 0.0f};
-    GLuint indeces[] = {
-        0, 1, 2,
-        0, 2, 3};
+
     GLuint vbo, ibo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -81,6 +57,8 @@ int main(int argc, char *argv[])
     // glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
     // Game loop
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(gWindow))
     {
         showFPS(gWindow);
@@ -89,7 +67,10 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Rest of the stuff
         // lightingShader.use();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         polyShader.use();
+        polyShader.setUniform("mycolor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
         //Dynamic part involes drawing polygon
         GLuint mVBO, mVAO;
         glGenVertexArrays(1, &mVAO);
@@ -103,8 +84,12 @@ int main(int argc, char *argv[])
         glBindVertexArray(0);
         //actual rendering of poly
         glBindVertexArray(mVAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glDrawArrays(GL_LINE_LOOP, 0, 5);
+
         glBindVertexArray(0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
         //End Dynamic part involes drawing polygon
 
         //Static draw part

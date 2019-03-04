@@ -18,6 +18,31 @@ int gWindowHeight = 768;
 GLFWwindow *gWindow = NULL;
 glm::vec4 gClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 static bool mac_moved = true;
+GLfloat symmetry_create = 1.0;
+static const GLfloat verties[] = {
+    -symmetry_create,
+    symmetry_create,
+    0.0f,
+    //uv
+    0.0f, 1.0f,
+    symmetry_create,
+    symmetry_create,
+    0.0f,
+    //uv
+    1.0f, 1.0f,
+    symmetry_create,
+    -symmetry_create,
+    0.0f,
+    //uv
+    1.0f, 0.0f,
+    -symmetry_create,
+    -symmetry_create,
+    0.0f,
+    //uv
+    0.0f, 0.0f};
+GLuint indeces[] = {
+    0, 1, 2,
+    0, 2, 3};
 
 // Function Prototypes
 std::string getOsName();
