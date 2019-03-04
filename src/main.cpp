@@ -23,13 +23,13 @@ int main(int argc, char *argv[])
     texture.loadTexture("images/brain.jpeg", true);
     //Vertices for image
 
-    GLfloat symmetry_create1 = 0.4; //max is 1 for entire screen
-    static const GLfloat image_points[] = {
-        -symmetry_create1, -symmetry_create1, 0,
-        symmetry_create1, -symmetry_create1, 0,
-        symmetry_create1, symmetry_create1, 0,
-        0, symmetry_create1 - 0.2, 0,
-        -symmetry_create1, symmetry_create1, 0};
+    // GLfloat symmetry_create1 = 0.4; //max is 1 for entire screen
+    // static const GLfloat image_points[] = {
+    //     -symmetry_create1, -symmetry_create1, 0,
+    //     symmetry_create1, -symmetry_create1, 0,
+    //     symmetry_create1, symmetry_create1, 0,
+    //     0, symmetry_create1 - 0.2, 0,
+    //     -symmetry_create1, symmetry_create1, 0};
 
     GLuint vbo, ibo;
     glGenBuffers(1, &vbo);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     //texCoord
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-    //Indexing
+    // Indexing
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
@@ -71,16 +71,18 @@ int main(int argc, char *argv[])
         glGenBuffers(1, &mVBO);
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
+        // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, truth_data.size() * sizeof(glm::vec3), &truth_data[0], GL_STATIC_DRAW);
         // Vertex Positions
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid *)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
         //actual rendering of poly
         glBindVertexArray(mVAO);
-        // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        glDrawArrays(GL_LINE_LOOP, 0, 5);
+        glDrawArrays(GL_LINE_LOOP, 0, truth_data.size());
+        // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
         glBindVertexArray(0);
+
         //End Dynamic part involes drawing polygon
 
         //Static draw part
