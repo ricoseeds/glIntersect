@@ -14,5 +14,5 @@ g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp  -framework OpenGl -I/u
 
 ###### Compile and run in Linux
 ```
-g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp -std=c++0x -lglfw -lGL -lm -lXrandr -lXi -lX11 -lXxf86vm -lpthread -lGLEW && ./a.out
+g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp -std=c++0x -lglfw -lGL -lm -lXrandr -lXi -lX11 -lXxf86vm -lpthread -lGLEW -I/usr/include/freetype2 -L/usr/local/lib -lfreetype 
 ```
