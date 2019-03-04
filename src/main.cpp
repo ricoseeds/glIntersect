@@ -50,15 +50,7 @@ int main(int argc, char *argv[])
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
 
-    // Enable blending
-    glEnable(GL_BLEND);
-    // glBlendFunc(0.5, 0.5);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-    // Game loop
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     while (!glfwWindowShouldClose(gWindow))
     {
         showFPS(gWindow);
@@ -66,8 +58,7 @@ int main(int argc, char *argv[])
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Rest of the stuff
-        // lightingShader.use();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         polyShader.use();
         polyShader.setUniform("mycolor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
@@ -86,10 +77,7 @@ int main(int argc, char *argv[])
         glBindVertexArray(mVAO);
         // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         glDrawArrays(GL_LINE_LOOP, 0, 5);
-
         glBindVertexArray(0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
         //End Dynamic part involes drawing polygon
 
         //Static draw part
