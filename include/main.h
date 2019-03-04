@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #define GLEW_STATIC
 #include "GL/glew.h"
@@ -25,6 +26,7 @@ int gWindowHeight = 768;
 GLFWwindow *gWindow = NULL;
 glm::vec4 gClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 static bool mac_moved = true;
+double fps;
 GLfloat symmetry_create = 1.0;
 static const GLfloat verties[] = {
     -symmetry_create,
@@ -50,16 +52,17 @@ static const GLfloat verties[] = {
 GLuint indeces[] = {
     0, 1, 2,
     0, 2, 3};
-double normalizedX, normalizedY; 
+double normalizedX, normalizedY;
 int number_of_truth_points = 0;
 std::vector<glm::vec3> truth_data;
-struct Character {
-    GLuint     TextureID;  // ID handle of the glyph texture
-    glm::ivec2 Size;       // Size of glyph
-    glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
-    GLuint     Advance;    // Offset to advance to next glyph
+struct Character
+{
+    GLuint TextureID;   // ID handle of the glyph texture
+    glm::ivec2 Size;    // Size of glyph
+    glm::ivec2 Bearing; // Offset from baseline to left/top of glyph
+    GLuint Advance;     // Offset to advance to next glyph
 };
-GLuint VAO, VBO;//for the fonts
+GLuint VAO, VBO; //for the fonts
 std::map<GLchar, Character> Characters;
 
 // Function Prototypes
@@ -70,7 +73,7 @@ void mac_patch(GLFWwindow *window);
 // Callbacks
 void glfw_onFramebufferSize(GLFWwindow *window, int width, int height);
 void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode);
-static void cursorPositionCallback( GLFWwindow *window, double xpos, double ypos );
+static void cursorPositionCallback(GLFWwindow *window, double xpos, double ypos);
 void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 
 // boiler plate for setting up opengl
@@ -109,8 +112,8 @@ bool initOpenGL()
         std::cerr << "Failed to initialize GLEW" << std::endl;
         return false;
     }
-        // Set OpenGL options
-    
+    // Set OpenGL options
+
     return true;
 }
 
@@ -132,7 +135,7 @@ void mac_patch(GLFWwindow *window)
     }
 }
 
-void showFPS(GLFWwindow *window)
+void showFPS(GLFWwindow *window, Shader &shader)
 {
     static double previousSeconds = 0.0;
     static int frameCount = 0;
@@ -140,14 +143,16 @@ void showFPS(GLFWwindow *window)
     double currentSeconds = glfwGetTime(); // returns number of seconds since GLFW started, as double float
 
     elapsedSeconds = currentSeconds - previousSeconds;
-
+    double fps_old;
+    // double fps;
     // Limit text updates to 4 times per second
     if (elapsedSeconds > 0.25)
     {
         previousSeconds = currentSeconds;
-        double fps = (double)frameCount / elapsedSeconds;
+        fps = (double)frameCount / elapsedSeconds;
+        // double fps = (double)frameCount / elapsedSeconds;
         double msPerFrame = 1000.0 / fps;
-
+        fps_old = fps;
         // The C++ way of setting the window title
         std::ostringstream outs;
         outs.precision(3); // decimal places
@@ -155,11 +160,12 @@ void showFPS(GLFWwindow *window)
              << APP_TITLE << "    "
              << "FPS: " << fps << "    "
              << "Frame Time: " << msPerFrame << " (ms)";
-        glfwSetWindowTitle(window, outs.str().c_str());
 
         // Reset for next average.
         frameCount = 0;
     }
+    RenderText(shader, "FPS:", 25.0f, 100.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(shader, std::to_string((int)fps), 80.0f, 100.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     frameCount++;
 }
@@ -168,18 +174,20 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
-static void cursorPositionCallback( GLFWwindow *window, double xpos, double ypos )
+static void cursorPositionCallback(GLFWwindow *window, double xpos, double ypos)
 {
     // std::cout << xpos << " : " << ypos << std::endl;
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    {
         std::cout << "Press\n";
-        normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth; 
+        normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
         normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
-        number_of_truth_points ++;
+        number_of_truth_points++;
         std::cout << normalizedX << " : " << normalizedY << std::endl;
 
         truth_data.push_back(glm::vec3(normalizedX, normalizedY, 0));
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        {
             std::cout << "Release\n";
         }
     }
@@ -213,7 +221,7 @@ void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat 
 {
     // glEnable(GL_CULL_FACE);
 
-    // Activate corresponding render state	
+    // Activate corresponding render state
     shader.use();
     glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
@@ -221,7 +229,7 @@ void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat 
 
     // Iterate through all characters
     std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++) 
+    for (c = text.begin(); c != text.end(); c++)
     {
         Character ch = Characters[*c];
 
@@ -232,14 +240,13 @@ void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat 
         GLfloat h = ch.Size.y * scale;
         // Update VBO for each character
         GLfloat vertices[6][4] = {
-            { xpos,     ypos + h,   0.0, 0.0 },            
-            { xpos,     ypos,       0.0, 1.0 },
-            { xpos + w, ypos,       1.0, 1.0 },
+            {xpos, ypos + h, 0.0, 0.0},
+            {xpos, ypos, 0.0, 1.0},
+            {xpos + w, ypos, 1.0, 1.0},
 
-            { xpos,     ypos + h,   0.0, 0.0 },
-            { xpos + w, ypos,       1.0, 1.0 },
-            { xpos + w, ypos + h,   1.0, 0.0 }           
-        };
+            {xpos, ypos + h, 0.0, 0.0},
+            {xpos + w, ypos, 1.0, 1.0},
+            {xpos + w, ypos + h, 1.0, 0.0}};
         // Render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
         // Update content of VBO memory
@@ -248,14 +255,13 @@ void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat 
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // Render quad
-    // glEnable(GL_CULL_FACE);
+        // glEnable(GL_CULL_FACE);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
-    // glDisable(GL_CULL_FACE);
+        // glDisable(GL_CULL_FACE);
         // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-

@@ -1,4 +1,5 @@
 #include "../include/main.h"
+#include "../include/stb_image.h"
 
 int main(int argc, char *argv[])
 {
@@ -6,13 +7,23 @@ int main(int argc, char *argv[])
     {
         mac_moved = false;
     }
+    int components;
+    unsigned char *imageData = stbi_load("images/brain.jpeg", &gWindowWidth, &gWindowHeight, &components, STBI_rgb_alpha);
+    gWindowWidth *= 1.5;
+    gWindowHeight *= 1.5;
+    if (imageData == NULL)
+    {
+        std::cerr << "Error loading texture '"
+                  << "'" << std::endl;
+        return false;
+    }
     if (!initOpenGL())
     {
         // An error occured
         std::cerr << "GLFW initialization failed" << std::endl;
         return -1;
     }
-    glfwSetCursorPosCallback( gWindow, cursorPositionCallback );
+    glfwSetCursorPosCallback(gWindow, cursorPositionCallback);
     // glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -29,11 +40,10 @@ int main(int argc, char *argv[])
     // glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shader shader("shaders/font.vert", "shaders/font.frag"); // font shader
-    
+
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(gWindowWidth), 0.0f, static_cast<GLfloat>(gWindowHeight));
     shader.use();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
 
     // Set the required callback functions
     glfwSetKeyCallback(gWindow, glfw_onKey);
@@ -49,16 +59,17 @@ int main(int argc, char *argv[])
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 
     FT_Face face;
-    if (FT_New_Face(ft, "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf", 0, &face))
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl; 
-    FT_Set_Pixel_Sizes(face, 0, 48); 
+    if (FT_New_Face(ft, "/Users/arghachakraborty/Library/Fonts/OpenSans-Regular.ttf", 0, &face))
+        // if (FT_New_Face(ft, "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf", 0, &face))
+        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+    FT_Set_Pixel_Sizes(face, 0, 48);
     if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
-    std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+        std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
-  
+
     for (GLubyte c = 0; c < 128; c++)
     {
-        // Load character glyph 
+        // Load character glyph
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
         {
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
@@ -77,8 +88,7 @@ int main(int argc, char *argv[])
             0,
             GL_RED,
             GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer
-        );
+            face->glyph->bitmap.buffer);
         // Set texture options
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -86,11 +96,10 @@ int main(int argc, char *argv[])
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // Now store character for later use
         Character character = {
-            texture, 
+            texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
-        };
+            face->glyph->advance.x};
         Characters.insert(std::pair<GLchar, Character>(c, character));
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -143,17 +152,16 @@ int main(int argc, char *argv[])
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
 
-
     while (!glfwWindowShouldClose(gWindow))
     {
-        showFPS(gWindow);
+        // showFPS(gWindow, shader);
         glfwPollEvents();
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Rest of the stuff
         // shader.use();
-
-        RenderText(shader, "STATS:", 25.0f, 80.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        showFPS(gWindow, shader);
+        RenderText(shader, "STATISTICS:", 25.0f, 80.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
         RenderText(shader, "No of Vertices:", 25.0f, 60.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
         RenderText(shader, std::to_string(truth_data.size()), 25.0f, 25.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
