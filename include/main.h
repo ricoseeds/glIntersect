@@ -26,6 +26,7 @@ int gWindowHeight = 768;
 GLFWwindow *gWindow = NULL;
 glm::vec4 gClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 static bool mac_moved = true;
+bool close_truth = false;
 double fps;
 GLfloat symmetry_create = 1.0;
 static const GLfloat verties[] = {
@@ -173,11 +174,13 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+        close_truth = true;
 }
 static void cursorPositionCallback(GLFWwindow *window, double xpos, double ypos)
 {
     // std::cout << xpos << " : " << ypos << std::endl;
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !close_truth)
     {
         std::cout << "Press\n";
         normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;

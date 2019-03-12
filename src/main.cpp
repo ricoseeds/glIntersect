@@ -164,31 +164,33 @@ int main(int argc, char *argv[])
         RenderText(shader, "STATISTICS:", 25.0f, 80.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
         RenderText(shader, "No of Vertices:", 25.0f, 60.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
         RenderText(shader, std::to_string(truth_data.size()), 25.0f, 25.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        if (!close_truth)
+        {
 
-        polyShader.use();
-        polyShader.setUniform("mycolor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+            polyShader.use();
+            polyShader.setUniform("mycolor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-        //Dynamic part involes drawing polygon
-        GLuint mVBO, mVAO;
-        glGenVertexArrays(1, &mVAO);
-        glGenBuffers(1, &mVBO);
-        glBindVertexArray(mVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-        // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
-        glBufferData(GL_ARRAY_BUFFER, truth_data.size() * sizeof(glm::vec3), &truth_data[0], GL_STATIC_DRAW);
-        // Vertex Positions
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid *)0);
-        glEnableVertexAttribArray(0);
-        glBindVertexArray(0);
-        //actual rendering of poly
-        glBindVertexArray(mVAO);
-        glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
-        glDrawArrays(GL_LINE_LOOP, 0, truth_data.size());
-        // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
-        glBindVertexArray(0);
+            //Dynamic part involes drawing polygon
+            GLuint mVBO, mVAO;
+            glGenVertexArrays(1, &mVAO);
+            glGenBuffers(1, &mVBO);
+            glBindVertexArray(mVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+            // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, truth_data.size() * sizeof(glm::vec3), &truth_data[0], GL_STATIC_DRAW);
+            // Vertex Positions
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid *)0);
+            glEnableVertexAttribArray(0);
+            glBindVertexArray(0);
+            //actual rendering of poly
+            glBindVertexArray(mVAO);
+            // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
+            glDrawArrays(GL_LINE_LOOP, 0, truth_data.size());
+            // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
+            glBindVertexArray(0);
 
-        //End Dynamic part involes drawing polygon
-
+            //End Dynamic part involes drawing polygon
+        }
         //Static draw part
         lightingShader.use();
         texture.bind(0);
