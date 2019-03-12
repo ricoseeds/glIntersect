@@ -162,22 +162,26 @@ int main(int argc, char *argv[])
         // shader.use();
         showFPS(gWindow, shader);
         RenderText(shader, "STATISTICS:", 25.0f, 80.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-        RenderText(shader, "No of Vertices:", 25.0f, 60.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-        RenderText(shader, std::to_string(truth_data.size()), 25.0f, 25.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, "No of Vertices GT:", 25.0f, 60.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, std::to_string(truth_data.size()), 25.0f, 40.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, "No of Vertices RAW:", 25.0f, 30.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, std::to_string(raw_data.size()), 25.0f, 10.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+        GLuint mVBO, mVAO;
         if (!close_truth)
         {
-
             polyShader.use();
+
             polyShader.setUniform("mycolor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
             //Dynamic part involes drawing polygon
-            GLuint mVBO, mVAO;
+
             glGenVertexArrays(1, &mVAO);
             glGenBuffers(1, &mVBO);
             glBindVertexArray(mVAO);
             glBindBuffer(GL_ARRAY_BUFFER, mVBO);
             // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
-            glBufferData(GL_ARRAY_BUFFER, truth_data.size() * sizeof(glm::vec3), &truth_data[0], GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, truth_data.size() * sizeof(glm::vec3), &truth_data[0], GL_DYNAMIC_DRAW);
             // Vertex Positions
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid *)0);
             glEnableVertexAttribArray(0);
@@ -186,6 +190,31 @@ int main(int argc, char *argv[])
             glBindVertexArray(mVAO);
             // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
             glDrawArrays(GL_LINE_LOOP, 0, truth_data.size());
+            // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
+            glBindVertexArray(0);
+
+            //End Dynamic part involes drawing polygon
+        }
+        else if (number_of_probe_points > 0)
+        {
+            polyShader.use();
+            polyShader.setUniform("mycolor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            //Dynamic part involes drawing polygon
+            // GLuint mVBO, mVAO;
+            glGenVertexArrays(1, &mVAO);
+            glGenBuffers(1, &mVBO);
+            glBindVertexArray(mVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+            // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, raw_data.size() * sizeof(glm::vec3), &raw_data[0], GL_DYNAMIC_DRAW);
+            // Vertex Positions
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid *)0);
+            glEnableVertexAttribArray(0);
+            glBindVertexArray(0);
+            //actual rendering of poly
+            glBindVertexArray(mVAO);
+            // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
+            glDrawArrays(GL_LINE_LOOP, 0, raw_data.size());
             // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
             glBindVertexArray(0);
 

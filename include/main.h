@@ -56,6 +56,9 @@ GLuint indeces[] = {
 double normalizedX, normalizedY;
 int number_of_truth_points = 0;
 std::vector<glm::vec3> truth_data;
+int number_of_probe_points = 0;
+std::vector<glm::vec3> raw_data;
+bool start_draw = false;
 struct Character
 {
     GLuint TextureID;   // ID handle of the glyph texture
@@ -175,25 +178,49 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
+        // close_truth = !close_truth;
         close_truth = true;
 }
 static void cursorPositionCallback(GLFWwindow *window, double xpos, double ypos)
 {
     // std::cout << xpos << " : " << ypos << std::endl;
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !close_truth)
+    //setup ground truth
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
-        std::cout << "Press\n";
-        normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
-        normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
-        number_of_truth_points++;
-        std::cout << normalizedX << " : " << normalizedY << std::endl;
-
-        truth_data.push_back(glm::vec3(normalizedX, normalizedY, 0));
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        if (!close_truth)
         {
-            std::cout << "Release\n";
+            std::cout << "GroundTruth\n";
+            normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
+            normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
+            number_of_truth_points++;
+            std::cout << normalizedX << " : " << normalizedY << std::endl;
+
+            truth_data.push_back(glm::vec3(normalizedX, normalizedY, 0));
+        }
+        else
+        {
+            std::cout << "Raw\n";
+            normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
+            normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
+            number_of_probe_points++;
+            std::cout
+                << normalizedX << " : " << normalizedY << std::endl;
+
+            raw_data.push_back(glm::vec3(-1.0 + 2.0 * xpos / (double)gWindowWidth, 1.0 - 2.0 * ypos / (double)gWindowHeight, 0));
         }
     }
+    //start drawing
+    // if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && start_draw)
+    // {
+    //     std::cout << "Raw\n";
+    //     normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
+    //     normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
+    //     number_of_probe_points++;
+    //     std::cout
+    //         << normalizedX << " : " << normalizedY << std::endl;
+
+    //     raw_data.push_back(glm::vec3(-1.0 + 2.0 * xpos / (double)gWindowWidth, 1.0 - 2.0 * ypos / (double)gWindowHeight, 0));
+    // }
 }
 
 void glfw_onFramebufferSize(GLFWwindow *window, int width, int height)

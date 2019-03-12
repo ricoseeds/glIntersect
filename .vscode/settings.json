@@ -74,6 +74,7 @@
         "system_error": "cpp",
         "thread": "cpp",
         "variant": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "hash_map": "cpp"
     }
 }
