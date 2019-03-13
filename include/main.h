@@ -72,6 +72,7 @@ bool computation_done = false;
 bool show_truth = true;
 bool show_data = true;
 bool show_intersection = false;
+double score = 0.0;
 struct Character
 {
     GLuint TextureID;   // ID handle of the glyph texture
@@ -235,10 +236,12 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
         boost::geometry::intersection(poly, poly2, output);
         int k = 0;
         //finds intersections
-        std::cout << "INTERSECTION\n";
+        // std::cout << "INTERSECTION\n";
+        double inter_area = 0.0;
         BOOST_FOREACH (polygon const &p, output)
         {
-            std::cout << k++ << ": " << boost::geometry::wkt(p) << std::endl;
+            inter_area += boost::geometry::area(p);
+            // std::cout << k++ << ": " << boost::geometry::wkt(p) << std::endl;
             polygon new_intersection_output = p;
             std::vector<point> const &points = new_intersection_output.outer();
             // std::vector<double> Px;
@@ -261,6 +264,17 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
             //     std::cout << "Px[" << i << "] = " << Px[i] << ", Py[" << i << "] = " << Py[i] << std::endl;
             // }
         }
+
+        std::vector<polygon> output_union;
+        boost::geometry::union_(poly, poly2, output_union);
+        k = 0;
+        // std::cout << "UNION\n";
+        double u_area = 0.0;
+        BOOST_FOREACH (polygon const &p, output_union)
+        {
+            u_area += boost::geometry::area(p);
+        }
+        score = inter_area / u_area;
         computation_done = true;
     }
     // {

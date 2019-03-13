@@ -166,6 +166,12 @@ int main(int argc, char *argv[])
         RenderText(shader, std::to_string(truth_data.size()), 25.0f, 40.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
         RenderText(shader, "No of Vertices RAW:", 25.0f, 30.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
         RenderText(shader, std::to_string(raw_data.size()), 25.0f, 10.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        RenderText(shader, "SCORE", gWindowWidth - 80, gWindowHeight - 20, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        if (computation_done)
+        {
+
+            RenderText(shader, std::to_string(score * 100), gWindowWidth - 80, gWindowHeight - 50, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+        }
 
         GLuint mVBO, mVAO;
         if (show_truth)
