@@ -22,3 +22,7 @@ g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp -std=c++0x -lglfw -lGL 
 3. Optional : To check the correct region press 'P'
 4. Optional : To hide the truth region press 'K'
 5. Optional : To hide your marked region press 'L'
+
+
+###### DEMO
+![upload](https://user-images.githubusercontent.com/17334660/54269481-75367600-45a3-11e9-9207-b4053bb041fb.gif)
