@@ -16,3 +16,9 @@ g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp -o run -std=c++11 -fram
 ```
 g++ src/main.cpp src/ShaderProgram.cpp src/Texture2D.cpp -std=c++0x -lglfw -lGL -lm -lXrandr -lXi -lX11 -lXxf86vm -lpthread -lGLEW -I/usr/include/freetype2 -L/usr/local/lib -lfreetype 
 ```
+###### USE
+1. draw truth region and press 'D' when done.
+2. draw your poly and press 'C' to see the score
+3. Optional : To check the correct region press 'P'
+4. Optional : To hide the truth region press 'K'
+5. Optional : To hide your marked region press 'L'
