@@ -69,6 +69,9 @@ std::vector<glm::vec3> raw_data;
 std::vector<glm::vec3> raw_data_real;
 bool start_draw = false;
 bool computation_done = false;
+bool show_truth = true;
+bool show_data = true;
+bool show_intersection = false;
 struct Character
 {
     GLuint TextureID;   // ID handle of the glyph texture
@@ -187,8 +190,19 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+    if (key == GLFW_KEY_K && action == GLFW_PRESS)
+    {
+        show_truth = !show_truth;
+    }
+    if (key == GLFW_KEY_L && action == GLFW_PRESS)
+    {
+        show_data = !show_data;
+    }
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
+        show_intersection = !show_intersection;
+    }
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
-        // close_truth = !close_truth;
         close_truth = true;
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {

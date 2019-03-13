@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
         RenderText(shader, std::to_string(raw_data.size()), 25.0f, 10.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
         GLuint mVBO, mVAO;
-        if (!close_truth)
+        if (show_truth)
         {
             polyShader.use();
 
@@ -188,14 +188,12 @@ int main(int argc, char *argv[])
             glBindVertexArray(0);
             //actual rendering of poly
             glBindVertexArray(mVAO);
-            // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
             glDrawArrays(GL_LINE_LOOP, 0, truth_data.size());
-            // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
             glBindVertexArray(0);
 
             //End Dynamic part involes drawing polygon
         }
-        else if (number_of_probe_points > 0)
+        if (number_of_probe_points > 0 && show_data)
         {
             polyShader.use();
             polyShader.setUniform("mycolor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -213,14 +211,12 @@ int main(int argc, char *argv[])
             glBindVertexArray(0);
             //actual rendering of poly
             glBindVertexArray(mVAO);
-            // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
             glDrawArrays(GL_LINE_LOOP, 0, raw_data.size());
-            // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
             glBindVertexArray(0);
 
             //End Dynamic part involes drawing polygon
         }
-        if (computation_done)
+        if (computation_done && show_intersection)
         {
             for (size_t i = 0; i < result_data.size(); i++)
             {
@@ -228,8 +224,6 @@ int main(int argc, char *argv[])
                 // {
                 polyShader.use();
                 polyShader.setUniform("mycolor", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-                //Dynamic part involes drawing polygon
-                // GLuint mVBO, mVAO;
                 glGenVertexArrays(1, &mVAO);
                 glGenBuffers(1, &mVBO);
                 glBindVertexArray(mVAO);
@@ -242,9 +236,7 @@ int main(int argc, char *argv[])
                 glBindVertexArray(0);
                 //actual rendering of poly
                 glBindVertexArray(mVAO);
-                // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
                 glDrawArrays(GL_LINE_LOOP, 0, result_data[i].size());
-                // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
                 glBindVertexArray(0);
                 // }
             }
