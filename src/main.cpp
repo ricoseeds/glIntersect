@@ -220,6 +220,36 @@ int main(int argc, char *argv[])
 
             //End Dynamic part involes drawing polygon
         }
+        if (computation_done)
+        {
+            for (size_t i = 0; i < result_data.size(); i++)
+            {
+                // for (size_t j = 0; j < result_data[i].size(); j++)
+                // {
+                polyShader.use();
+                polyShader.setUniform("mycolor", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+                //Dynamic part involes drawing polygon
+                // GLuint mVBO, mVAO;
+                glGenVertexArrays(1, &mVAO);
+                glGenBuffers(1, &mVBO);
+                glBindVertexArray(mVAO);
+                glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+                // glBufferData(GL_ARRAY_BUFFER, sizeof(image_points), image_points, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, result_data[i].size() * sizeof(glm::vec3), &result_data[i][0], GL_DYNAMIC_DRAW);
+                // Vertex Positions
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid *)0);
+                glEnableVertexAttribArray(0);
+                glBindVertexArray(0);
+                //actual rendering of poly
+                glBindVertexArray(mVAO);
+                // glDrawArrays(GL_LINES_ADJACENCY, 0, truth_data.size());
+                glDrawArrays(GL_LINE_LOOP, 0, result_data[i].size());
+                // glDrawArrays(GL_TRIANGLE_STRIP, 0, truth_data.size());
+                glBindVertexArray(0);
+                // }
+            }
+        }
+
         //Static draw part
         lightingShader.use();
         texture.bind(0);

@@ -16,6 +16,13 @@
 #include "../include/Shader.h"
 #include "../include/Texture2D.h"
 
+#include <deque>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/geometry/algorithms/correct.hpp>
+#include <boost/foreach.hpp>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -56,9 +63,12 @@ GLuint indeces[] = {
 double normalizedX, normalizedY;
 int number_of_truth_points = 0;
 std::vector<glm::vec3> truth_data;
+std::vector<glm::vec3> truth_data_real;
 int number_of_probe_points = 0;
 std::vector<glm::vec3> raw_data;
+std::vector<glm::vec3> raw_data_real;
 bool start_draw = false;
+bool computation_done = false;
 struct Character
 {
     GLuint TextureID;   // ID handle of the glyph texture
@@ -68,7 +78,7 @@ struct Character
 };
 GLuint VAO, VBO; //for the fonts
 std::map<GLchar, Character> Characters;
-
+std::vector<std::vector<glm::vec3>> result_data;
 // Function Prototypes
 
 std::string getOsName();
@@ -180,6 +190,113 @@ void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
     if (key == GLFW_KEY_D && action == GLFW_PRESS)
         // close_truth = !close_truth;
         close_truth = true;
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+        typedef boost::geometry::model::d2::point_xy<double> point;
+        typedef boost::geometry::model::polygon<point> polygon;
+
+        //First Polygon
+        polygon poly;
+
+        for (size_t i = 0; i < truth_data_real.size(); i++)
+        {
+            poly.outer().push_back(point(truth_data_real[i].x, truth_data_real[i].y));
+        }
+
+        // std::string reason;
+        // bool first_valid = boost::geometry::is_valid(poly, reason);
+        // std::cout << boost::geometry::dsv(poly) << " - " << (!first_valid ? "invalid (" + reason + ")" : "valid") << "\n";
+        boost::geometry::correct(poly);
+        // std::cout << boost::geometry::dsv(poly) << " - " << (!first_valid ? "invalid (" + reason + ")" : "valid") << "\n";
+
+        polygon poly2;
+
+        for (size_t i = 0; i < raw_data_real.size(); i++)
+        {
+            poly2.outer().push_back(point(raw_data_real[i].x, raw_data_real[i].y));
+        }
+        boost::geometry::correct(poly2);
+
+        std::deque<polygon> output;
+        boost::geometry::intersection(poly, poly2, output);
+        int k = 0;
+        //finds intersections
+        std::cout << "INTERSECTION\n";
+        BOOST_FOREACH (polygon const &p, output)
+        {
+            std::cout << k++ << ": " << boost::geometry::wkt(p) << std::endl;
+            polygon new_intersection_output = p;
+            std::vector<point> const &points = new_intersection_output.outer();
+            // std::vector<double> Px;
+            // std::vector<double> Py;
+            std::vector<glm::vec3> extract_points;
+            for (std::vector<point>::size_type i = 0; i < points.size(); ++i)
+            {
+                // Px.push_back(boost::geometry::get<0>(points[i]));
+                // Py.push_back(boost::geometry::get<1>(points[i]));
+                double px = boost::geometry::get<0>(points[i]);
+                double py = boost::geometry::get<1>(points[i]);
+                normalizedX = -1.0 + 2.0 * px / (double)gWindowWidth;
+                normalizedY = 1.0 - 2.0 * py / (double)gWindowHeight;
+                extract_points.push_back(glm::vec3(normalizedX, normalizedY, 0.0));
+            }
+            result_data.push_back(extract_points);
+
+            // for (int i = 0; i < Px.size(); i++)
+            // {
+            //     std::cout << "Px[" << i << "] = " << Px[i] << ", Py[" << i << "] = " << Py[i] << std::endl;
+            // }
+        }
+        computation_done = true;
+    }
+    // {
+    //     typedef boost::geometry::model::d2::point_xy<double> point;
+    //     typedef boost::geometry::model::polygon<point> polygon;
+    //     polygon poly_truth;
+    //     for (size_t i = 0; i < truth_data.size(); i++)
+    //     {
+    //         poly_truth.outer().push_back(point(truth_data_real[i].x, truth_data_real[i].y));
+    //     }
+    //     boost::geometry::correct(poly_truth);
+    //     // std::cout << boost::geometry::wkt(poly_truth) << std::endl;
+    //     std::string reason;
+    //     bool first_valid = boost::geometry::is_valid(poly_truth, reason);
+    //     std::cout << " - " << (!first_valid ? "invalid (" + reason + ")" : " truth data valid") << "\n";
+
+    //     polygon poly_raw;
+    //     for (size_t i = 0; i < raw_data.size(); i++)
+    //     {
+    //         poly_raw.outer().push_back(point(raw_data_real[i].x, raw_data_real[i].y));
+    //     }
+    //     boost::geometry::correct(poly_raw);
+    //     std::deque<polygon> output_intersection;
+    //     bool second_valid = boost::geometry::is_valid(poly_raw, reason);
+    //     std::cout << " - " << (!second_valid ? "invalid (" + reason + ")" : " raw data valid") << "\n";
+    //     boost::geometry::intersection(poly_raw, poly_truth, output_intersection);
+    //     int k = 0;
+    //     BOOST_FOREACH (polygon const &p, output_intersection)
+    //     {
+    //         std::cout << "INTERSECT " << k++ << ": " << boost::geometry::wkt(p) << std::endl;
+    //         // polygon new_intersection_output = p;
+    //         // std::vector<point> const &points = new_intersection_output.outer();
+    //         // std::vector<double> Px;
+    //         // std::vector<double> Py;
+
+    //         // for (std::vector<point>::size_type i = 0; i < points.size(); ++i)
+    //         // {
+    //         //     Px.push_back(boost::geometry::get<0>(points[i]));
+    //         //     Py.push_back(boost::geometry::get<1>(points[i]));
+    //         // }
+
+    //         // std::cout << "Size Px = " << Px.size() << std::endl;
+    //         // std::cout << "Size Py = " << Py.size() << std::endl;
+
+    //         // for (int i = 0; i < Px.size(); i++)
+    //         // {
+    //         //     std::cout << "Px[" << i << "] = " << Px[i] << ", Py[" << i << "] = " << Py[i] << std::endl;
+    //         // }
+    //     }
+    // }
 }
 static void cursorPositionCallback(GLFWwindow *window, double xpos, double ypos)
 {
@@ -189,24 +306,26 @@ static void cursorPositionCallback(GLFWwindow *window, double xpos, double ypos)
     {
         if (!close_truth)
         {
-            std::cout << "GroundTruth\n";
+            // std::cout << "GroundTruth\n";
             normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
             normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
             number_of_truth_points++;
-            std::cout << normalizedX << " : " << normalizedY << std::endl;
+            // std::cout << normalizedX << " : " << normalizedY << std::endl;
 
             truth_data.push_back(glm::vec3(normalizedX, normalizedY, 0));
+            truth_data_real.push_back(glm::vec3(xpos, ypos, 0));
         }
         else
         {
-            std::cout << "Raw\n";
+            // std::cout << "Raw\n";
             normalizedX = -1.0 + 2.0 * xpos / (double)gWindowWidth;
             normalizedY = 1.0 - 2.0 * ypos / (double)gWindowHeight;
             number_of_probe_points++;
-            std::cout
-                << normalizedX << " : " << normalizedY << std::endl;
+            // std::cout
+            //     << normalizedX << " : " << normalizedY << std::endl;
 
             raw_data.push_back(glm::vec3(-1.0 + 2.0 * xpos / (double)gWindowWidth, 1.0 - 2.0 * ypos / (double)gWindowHeight, 0));
+            raw_data_real.push_back(glm::vec3(xpos, ypos, 0));
         }
     }
     //start drawing
